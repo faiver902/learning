@@ -1,0 +1,100 @@
+services:
+  nginx:
+    image: nginx:latest
+    restart: always
+    volumes:
+      - ./nginx_conf/default.conf:/etc/nginx/conf.d/default.conf
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/www/certbot:/var/www/certbot
+    ports:
+      - "8000:80"
+    depends_on:
+      - web
+    networks:
+      - webnet
+
+  web:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    expose:
+      - "8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - db
+      - redis
+    networks:
+      - webnet
+
+    command: bash ./start_web_command.sh
+
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - webnet
+
+  redis:
+    image: redis:latest
+    restart: always
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    networks:
+      - webnet
+
+  celery-worker:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    command: >
+      sh -c "
+       celery -A core worker -l info
+      "
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    depends_on:
+      - web
+      - redis
+    networks:
+      - webnet
+
+  celery-beat:
+    build: .
+    restart: always
+    env_file:
+      - .env
+    command: >
+      sh -c "
+      celery -A core worker -l info
+      "
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - web
+      - redis
+    networks:
+      - webnet
+
+volumes:
+  static_volume:
+  media_volume:
+  postgres_data:
+
+networks:
+  webnet:
+    driver: bridge
