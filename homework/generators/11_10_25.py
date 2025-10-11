@@ -97,15 +97,61 @@ def batcher(seq, size: int):
         try:
             for _ in range(size):
                 temp_list.append(seq.pop(0))
-            result.append(temp_list)
+            result.append(tuple(temp_list))
         except Exception:
             result.append(tuple(temp_list))
     return result
 
 
-def batcher_2(seq, size: int):
-    pass
-
+# def batcher_2(seq, size: int):
+#     """
+#     как я понял, нужно что б seq было не в памяти.
+#     но я не могу придумать, как запоминать, где остановлся в предыдущий раз.
+#     если доступ по индексу, то это загрузка в память.
+#     если срезы - тоже в память.
+#
+#     """
+# result = []
+# cur_id = 0
+#
+# def format_list(seq):
+#     temp = []
+#     for _ in range(size):
+#         nonlocal cur_id
+#         temp.append(seq[cur_id + _])
+#         cur_id +=size
+#     yield tuple(temp)
+#
+# while seq:
+#     print(cur_id, seq[cur_id])
+#     result.append(format_list(seq))
+# return result
+###########
+# cursor = 0
+# result = []
+# temp_list = []
+# for i in range(size):
+#     temp_list.append(seq[cursor : cursor + size])
+#     cursor += size
+#
+# result.append(temp_list)
+# return result
+###########
+# cursor = 0
+# result = []
+# def return_size_list(seq, cursor, size):
+#     temp_list = []
+#     for i in range(size):
+#         temp_list.append(seq[cursor + i])
+#
+#     yield tuple(temp_list)
+#
+# while seq:
+#     print(seq)
+#     result.append(return_size_list(seq, cursor, size))
+#     cursor += size
+#
+# return result
 
 print(list(batcher(range(10), 3)))
-print(list(batcher_2(range(10), 3)))
+# print(list(batcher_2(range(3), 3)))
