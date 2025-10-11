@@ -130,21 +130,34 @@ def measure_time(func):
 
 
     Не понял, как сепарировать синхронную функцию. Ругается на нее.
+    По итогу все таки спросил у ГПТ. Сам не дошел, что я возвращаю корутину из синк. функции.
+    По итогу переделал на два врапера.
     """
+    if inspect.iscoroutinefunction(func):
 
-    @wraps(func)
-    async def wrapper(*args, **kwargs):
-        start = perf_counter()
-        if inspect.iscoroutinefunction(func):
-            await func(*args, **kwargs)
-        else:
-            print("run else")
-            await asyncio.to_thread(func(*args, **kwargs))
-        end = perf_counter()
-        print(end - start)
-        return end - start
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            start = perf_counter()
+            if inspect.iscoroutinefunction(func):
+                await func(*args, **kwargs)
+            else:
+                func(*args, **kwargs)
+            end = perf_counter()
+            print(end - start)
+            return end - start
 
-    return wrapper
+        return async_wrapper
+    else:
+
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            start = perf_counter()
+            func(*args, **kwargs)
+            end = perf_counter()
+            print(end - start)
+            return end - start
+
+        return sync_wrapper
 
 
 @measure_time
