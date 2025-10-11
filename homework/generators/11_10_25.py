@@ -57,3 +57,25 @@ next(gen)  # запускаем
 print(gen.send(5))  # 5
 print(gen.send(3))  # 8
 print(gen.send(-2))  # 6
+
+print("\n" + "#" * 80 + "\n")
+
+
+def filter_logs(li: list):
+    """
+    Есть строки лога. Сделай генератор filter_logs(lines, level), который возвращает только те строки, где есть level (например "ERROR").
+    """
+    for log in li:
+        if "ERROR" in log:
+            yield log
+
+
+logs = [
+    "INFO: start process",
+    "ERROR: invalid token",
+    "INFO: finished",
+    "ERROR: file not found",
+]
+
+list(filter_logs(logs, "ERROR"))
+# ['ERROR: invalid token', 'ERROR: file not found']
