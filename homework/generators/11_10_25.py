@@ -37,7 +37,7 @@ def cycle_words(words):
 
 
 gen = cycle_words(["red", "green", "blue"])
-list(next(gen) for _ in range(5))
+print(list(next(gen) for _ in range(5)))
 
 print("\n" + "#" * 80 + "\n")
 
