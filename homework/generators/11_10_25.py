@@ -1,5 +1,3 @@
-
-
 def sliding_window(seq, num):
     """
     Напиши генератор sliding_window(seq, n), который будет возвращать последовательность "окон" длиной n по списку seq.
@@ -42,3 +40,15 @@ gen = cycle_words(["red", "green", "blue"])
 list(next(gen) for _ in range(5))
 
 print("\n" + "#" * 80 + "\n")
+
+
+def accumulator():
+    summ = 0
+    yield summ
+
+
+gen = accumulator()
+next(gen)  # запускаем
+print(gen.send(5))  # 5
+print(gen.send(3))  # 8
+print(gen.send(-2))  # 6
