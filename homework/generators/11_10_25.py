@@ -61,12 +61,13 @@ print(gen.send(-2))  # 6
 print("\n" + "#" * 80 + "\n")
 
 
-def filter_logs(li: list):
+def filter_logs(li: list, level: str):
     """
     Есть строки лога. Сделай генератор filter_logs(lines, level), который возвращает только те строки, где есть level (например "ERROR").
+    # ['ERROR: invalid token', 'ERROR: file not found']
     """
     for log in li:
-        if "ERROR" in log:
+        if level in log:
             yield log
 
 
@@ -77,5 +78,29 @@ logs = [
     "ERROR: file not found",
 ]
 
-list(filter_logs(logs, "ERROR"))
-# ['ERROR: invalid token', 'ERROR: file not found']
+print(list(filter_logs(logs, "ERROR")))
+
+print("\n" + "#" * 80 + "\n")
+
+
+def batcher(seq, size: int):
+    """
+    Напиши генератор batcher(iterable, size), который будет собирать элементы в пакеты по size.
+
+    Не придумал куда тут генератор вставить.
+    """
+    seq = list(seq)
+    result = []
+    while seq:
+        temp_list = []
+        try:
+            for _ in range(size):
+                temp_list.append(seq.pop(0))
+            result.append(temp_list)
+        except Exception:
+            result.append(temp_list)
+    return result
+
+
+print(list(batcher(range(10), 3)))
+# [(0,1,2), (3,4,5), (6,7,8), (9,)]
