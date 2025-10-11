@@ -86,6 +86,7 @@ print("\n" + "#" * 80 + "\n")
 def batcher(seq, size: int):
     """
     Напиши генератор batcher(iterable, size), который будет собирать элементы в пакеты по size.
+    # [(0,1,2), (3,4,5), (6,7,8), (9,)]
 
     Не придумал куда тут генератор вставить.
     """
@@ -98,9 +99,13 @@ def batcher(seq, size: int):
                 temp_list.append(seq.pop(0))
             result.append(temp_list)
         except Exception:
-            result.append(temp_list)
+            result.append(tuple(temp_list))
     return result
 
 
+def batcher_2(seq, size: int):
+    pass
+
+
 print(list(batcher(range(10), 3)))
-# [(0,1,2), (3,4,5), (6,7,8), (9,)]
+print(list(batcher_2(range(10), 3)))
