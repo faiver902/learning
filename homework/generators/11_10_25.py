@@ -43,8 +43,13 @@ print("\n" + "#" * 80 + "\n")
 
 
 def accumulator():
-    summ = 0
-    yield summ
+    """
+    Создай генератор accumulator(), который принимает через .send() число и возвращает текущую сумму.
+    """
+    acc = 0
+    while True:
+        received = yield acc
+        acc += received
 
 
 gen = accumulator()
