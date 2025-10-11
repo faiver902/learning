@@ -181,3 +181,58 @@ asyncio.run(main())
 
 
 print("\n" + "#" * 80 + "\n")
+
+
+def trace(prefix: str = "", show_args: bool = False):
+    """
+    Требования:
+
+    Декоратор trace должен уметь применяться без параметров (@trace) и с параметрами (@trace(prefix="API", show_args=True)).
+    Поддержать синхронные функции, асинхронные функции и генераторы (в т.ч. async def-генераторы): логировать «start/stop» и, для генераторов, «yield n».
+    Обязательно сохранять:
+    __name__, __doc__, аннотации и оригинальную сигнатуру (проверьте inspect.signature).
+    Опциональные параметры: prefix: str = "", show_args: bool = False.
+    """
+
+    def sync_decorator(func):
+        @wraps(func)
+        def wrap(*args, **kwargs):
+            result = func(*args, **kwargs)
+            return result
+
+        return wrap
+
+    async def async_decorator(func):
+        @wraps(func)
+        async def wrap(*args, **kwargs):
+            print(prefix, show_args)
+            result = await func(*args, **kwargs)
+            return result
+
+        return wrap
+
+    if inspect.isfunction(prefix):
+        print("sync")
+        return sync_decorator(prefix)
+    elif inspect.iscoroutinefunction(prefix):
+        print("async")
+        return async_decorator(prefix)
+    return None
+
+
+@trace
+def add(a: int, b: int) -> int:
+    return a + b
+
+
+@trace
+async def get_user(uid: int):
+    print(f"get_user {uid} was work")
+
+
+async def main_2():
+    print(add(1, 2))
+    await get_user(1)
+
+
+asyncio.run(main_2())
