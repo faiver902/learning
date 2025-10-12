@@ -2598,132 +2598,132 @@
 # print(bin_search(quick_sort([1, 1, 8, 8, 7, 4, 4, 2]), 1))
 #
 # Graphs
-from collections import deque
-
-
-def person_is_seller(name):
-    return name == "tom"
-
-
-graph_people = dict()
-graph_people["you"] = ["alice", "bob", "claire"]
-graph_people["bob"] = ["anuj", "peggy"]
-graph_people["alice"] = ["peggy"]
-graph_people["claire"] = ["tom", "jonny"]
-graph_people["anuj"] = []
-graph_people["tom"] = []
-graph_people["jonny"] = []
-graph_people["peggy"] = []
-
-
-def search_wide(graph_param):
-    search_queue = deque()
-    search_queue += graph_param["you"]
-    searched = set()
-    while search_queue:
-        person = search_queue.popleft()
-        if person not in searched:
-            if person_is_seller(person):
-                print("found seller", person)
-                return True
-            else:
-                search_queue += graph_param[person]
-                searched.add(person)
-    return False
-
-
-print(search_wide(graph_people))
-
-graph_task = {
-    "Проснуться": ["Принять душ", "Почистить зубы"],
-    "Принять душ": [],
-    "Почистить зубы": ["Позавтракать"],
-    "Позавтракать": [],
-}
-
-new_task = {
-    "проснуться": ["сделать зарядку", "почистить зубы", "упаковать обед"],
-    "сделать зарядку": ["принять душ"],
-    "принять душ": ["одеться"],
-    "одеться": [],
-    "почистить зубы": ["позавтракать"],
-    "позавтракать": [],
-    "упаковать обед": [],
-    "уйти": [],
-}
-
-
-def is_valid_order(graph, order):
-    done = set()
-    for step in order:
-        # Все «предки» шага — те вершины, из которых есть ребро в step
-        # Находим их
-        required = [v for v, nxt in graph.items() if step in nxt]
-        if not set(required).issubset(done):
-            return False
-        done.add(step)
-    return True
-
-
-def all_topo_orders(graph):
-    indeg = {v: 0 for v in graph}
-    for u in graph:
-        for v in graph[u]:
-            indeg[v] += 1
-
-    result = []
-
-    def backtrack(path, indeg):
-        if len(path) == len(graph):
-            result.append(path[:])
-            return
-        for node in list(graph):
-            if indeg[node] == 0 and node not in path:
-                # «выбираем» вершину
-                for nxt in graph[node]:
-                    indeg[nxt] -= 1
-                path.append(node)
-                backtrack(path, indeg)
-                # откат
-                path.pop()
-                for nxt in graph[node]:
-                    indeg[nxt] += 1
-
-    backtrack([], indeg)
-    return result
-
-
-for order in all_topo_orders(graph_task):
-    print(order)
-    print(is_valid_order(graph_task, order))
-
-
-def topo_sort(graph):
-    indegree = {v: 0 for v in graph}
-
-    for u in graph:  # проснуться, сделать зарядку,принять душ ...
-        for v in graph[
-            u
-        ]:  # v = ["сделать зарядку", "почистить зубы", "упаковать обед"], ["принять душ"], ...
-            indegree[v] += 1
-            print(indegree)
-    # находим вершины без зависимостей, где значение - 0
-    queue = deque([v for v, d in indegree.items() if d == 0])
-    order = []
-
-    while queue:
-        # берем вершину из очереди. в нашем случае это одна штука
-        node = queue.popleft()
-        # добавляем в конечный результат
-        order.append(node)
-        # проходим по всем ее потомкам, куда есть стрелки
-        for nxt in graph[node]:
-            # уменьшаем зависимости вершин
-            indegree[nxt] -= 1
-            # когда зависимость будет 0, помещаем в очередь, после чего из этого ключа будет забираться
-            if indegree[nxt] == 0:
-                queue.append(nxt)
-    return order
-
-
-print(topo_sort(new_task))
+# from collections import deque
+#
+#
+# def person_is_seller(name):
+#     return name == "tom"
+#
+#
+# graph_people = dict()
+# graph_people["you"] = ["alice", "bob", "claire"]
+# graph_people["bob"] = ["anuj", "peggy"]
+# graph_people["alice"] = ["peggy"]
+# graph_people["claire"] = ["tom", "jonny"]
+# graph_people["anuj"] = []
+# graph_people["tom"] = []
+# graph_people["jonny"] = []
+# graph_people["peggy"] = []
+#
+#
+# def search_wide(graph_param):
+#     search_queue = deque()
+#     search_queue += graph_param["you"]
+#     searched = set()
+#     while search_queue:
+#         person = search_queue.popleft()
+#         if person not in searched:
+#             if person_is_seller(person):
+#                 print("found seller", person)
+#                 return True
+#             else:
+#                 search_queue += graph_param[person]
+#                 searched.add(person)
+#     return False
+#
+#
+# print(search_wide(graph_people))
+#
+# graph_task = {
+#     "Проснуться": ["Принять душ", "Почистить зубы"],
+#     "Принять душ": [],
+#     "Почистить зубы": ["Позавтракать"],
+#     "Позавтракать": [],
+# }
+#
+# new_task = {
+#     "проснуться": ["сделать зарядку", "почистить зубы", "упаковать обед"],
+#     "сделать зарядку": ["принять душ"],
+#     "принять душ": ["одеться"],
+#     "одеться": [],
+#     "почистить зубы": ["позавтракать"],
+#     "позавтракать": [],
+#     "упаковать обед": [],
+#     "уйти": [],
+# }
+#
+#
+# def is_valid_order(graph, order):
+#     done = set()
+#     for step in order:
+#         # Все «предки» шага — те вершины, из которых есть ребро в step
+#         # Находим их
+#         required = [v for v, nxt in graph.items() if step in nxt]
+#         if not set(required).issubset(done):
+#             return False
+#         done.add(step)
+#     return True
+#
+#
+# def all_topo_orders(graph):
+#     indeg = {v: 0 for v in graph}
+#     for u in graph:
+#         for v in graph[u]:
+#             indeg[v] += 1
+#
+#     result = []
+#
+#     def backtrack(path, indeg):
+#         if len(path) == len(graph):
+#             result.append(path[:])
+#             return
+#         for node in list(graph):
+#             if indeg[node] == 0 and node not in path:
+#                 # «выбираем» вершину
+#                 for nxt in graph[node]:
+#                     indeg[nxt] -= 1
+#                 path.append(node)
+#                 backtrack(path, indeg)
+#                 # откат
+#                 path.pop()
+#                 for nxt in graph[node]:
+#                     indeg[nxt] += 1
+#
+#     backtrack([], indeg)
+#     return result
+#
+#
+# for order in all_topo_orders(graph_task):
+#     print(order)
+#     print(is_valid_order(graph_task, order))
+#
+#
+# def topo_sort(graph):
+#     indegree = {v: 0 for v in graph}
+#
+#     for u in graph:  # проснуться, сделать зарядку,принять душ ...
+#         for v in graph[
+#             u
+#         ]:  # v = ["сделать зарядку", "почистить зубы", "упаковать обед"], ["принять душ"], ...
+#             indegree[v] += 1
+#             print(indegree)
+#     # находим вершины без зависимостей, где значение - 0
+#     queue = deque([v for v, d in indegree.items() if d == 0])
+#     order = []
+#
+#     while queue:
+#         # берем вершину из очереди. в нашем случае это одна штука
+#         node = queue.popleft()
+#         # добавляем в конечный результат
+#         order.append(node)
+#         # проходим по всем ее потомкам, куда есть стрелки
+#         for nxt in graph[node]:
+#             # уменьшаем зависимости вершин
+#             indegree[nxt] -= 1
+#             # когда зависимость будет 0, помещаем в очередь, после чего из этого ключа будет забираться
+#             if indegree[nxt] == 0:
+#                 queue.append(nxt)
+#     return order
+#
+#
+# print(topo_sort(new_task))
