@@ -2681,7 +2681,7 @@
 #             if indeg[node] == 0 and node not in path:
 #                 # «выбираем» вершину
 #                 for nxt in graph[node]:
-#                     indeg[nxt] -= 1
+#                    indeg[nxt] -= 1
 #                 path.append(node)
 #                 backtrack(path, indeg)
 #                 # откат
@@ -2727,3 +2727,15 @@
 #
 #
 # print(topo_sort(new_task))
+class Solution:
+    def missing_number(self, nums: list[int]) -> int:
+        length = len(nums)
+        for i in range(length + 1):
+            if i not in nums:
+                return i
+        return -1
+
+
+nums = [3, 0, 1]
+sol = Solution()
+print(sol.missing_number(nums))
