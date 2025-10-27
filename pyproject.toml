@@ -11,6 +11,9 @@ package-mode = false
 python = ">=3.12,<3.14"
 fastapi = "^0.118.3"
 ruff = "^0.14.1"
+beanie = "^2.0.0"
+motor = "^3.7.1"
+pydantic = "^2.12.3"
 
 
 [tool.poetry.group.dev.dependencies]

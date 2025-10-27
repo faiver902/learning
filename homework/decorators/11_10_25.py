@@ -1,6 +1,7 @@
 import inspect
 from functools import wraps
 from time import perf_counter
+from typing import Callable
 
 print("\n" + "#" * 80 + "\n")
 
@@ -183,46 +184,88 @@ asyncio.run(main())
 print("\n" + "#" * 80 + "\n")
 
 
-def trace(prefix: str = "", show_args: bool = False):
-    """
-    Требования:
+def trace(_func: Callable | None = None, *, prefix: str = "", show_args: bool = False):
+    """Универсальный декоратор трассировки."""
 
-    Декоратор trace должен уметь применяться без параметров (@trace) и с параметрами (@trace(prefix="API", show_args=True)).
-    Поддержать синхронные функции, асинхронные функции и генераторы (в т.ч. async def-генераторы): логировать «start/stop» и, для генераторов, «yield n».
-    Обязательно сохранять:
-    __name__, __doc__, аннотации и оригинальную сигнатуру (проверьте inspect.signature).
-    Опциональные параметры: prefix: str = "", show_args: bool = False.
-    """
+    def fmt_args(args, kwargs) -> str:
+        if not show_args:
+            return ""
+        parts = [", ".join(repr(a) for a in args)]
+        if kwargs:
+            parts.append(", ".join(f"{k}={v!r}" for k, v in kwargs.items()))
+        joined = ", ".join(p for p in parts if p)
+        return f" args=({joined})" if joined else ""
 
-    def sync_decorator(func):
+    def decorate(func: Callable):
+        if inspect.isasyncgenfunction(func):
+
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                print(f"{prefix} start {func.__name__}{fmt_args(args, kwargs)}")
+                i = 0
+                try:
+                    async for item in func(*args, **kwargs):
+                        print(f"{prefix} yield {i} {func.__name__}")
+                        i += 1
+                        yield item
+                finally:
+                    print(f"{prefix} stop  {func.__name__}")
+
+            wrapper.__signature__ = inspect.signature(func)
+            return wrapper
+
+        if inspect.iscoroutinefunction(func):
+
+            @wraps(func)
+            async def wrapper(*args, **kwargs):
+                print(f"{prefix} start {func.__name__}{fmt_args(args, kwargs)}")
+                try:
+                    return await func(*args, **kwargs)
+                finally:
+                    print(f"{prefix} stop  {func.__name__}")
+
+            wrapper.__signature__ = inspect.signature(func)
+            return wrapper
+
+        if inspect.isgeneratorfunction(func):
+
+            @wraps(func)
+            def wrapper(*args, **kwargs):
+                print(f"{prefix} start {func.__name__}{fmt_args(args, kwargs)}")
+                i = 0
+                try:
+                    for item in func(*args, **kwargs):
+                        print(f"{prefix} yield {i} {func.__name__}")
+                        i += 1
+                        yield item
+                finally:
+                    print(f"{prefix} stop  {func.__name__}")
+
+            wrapper.__signature__ = inspect.signature(func)
+            return wrapper
+
         @wraps(func)
-        def wrap(*args, **kwargs):
-            result = func(*args, **kwargs)
-            return result
+        def wrapper(*args, **kwargs):
+            print(f"{prefix} start {func.__name__}{fmt_args(args, kwargs)}")
+            try:
+                return func(*args, **kwargs)
+            finally:
+                print(f"{prefix} stop  {func.__name__}")
 
-        return wrap
+        wrapper.__signature__ = inspect.signature(func)
+        return wrapper
 
-    async def async_decorator(func):
-        @wraps(func)
-        async def wrap(*args, **kwargs):
-            print(prefix, show_args)
-            result = await func(*args, **kwargs)
-            return result
-
-        return wrap
-
-    if inspect.isfunction(prefix):
-        print("sync")
-        return sync_decorator(prefix)
-    elif inspect.iscoroutinefunction(prefix):
-        print("async")
-        return async_decorator(prefix)
-    return None
+    if _func is None:
+        return decorate
+    return decorate(_func)
 
 
 @trace
 def add(a: int, b: int) -> int:
     return a + b
+
+
+decorate_add = trace(prefix="9999", show_args=True)(add)
 
 
 @trace
@@ -231,7 +274,7 @@ async def get_user(uid: int):
 
 
 async def main_2():
-    print(add(1, 2))
+    print("add", decorate_add(1, 2))
     await get_user(1)
 
 
