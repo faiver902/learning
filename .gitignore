@@ -2,7 +2,7 @@
 .env
 .env.*          # .env.dev, .env.prod и т.п.
 *.env
-
+mongo_db_learning/mongodb_data/
 # Python: кэш и временные файлы
 __pycache__/
 **/__pycache__/
