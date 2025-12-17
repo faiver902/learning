@@ -2727,15 +2727,66 @@
 #
 #
 # print(topo_sort(new_task))
-class Solution:
-    def missing_number(self, nums: list[int]) -> int:
-        length = len(nums)
-        for i in range(length + 1):
-            if i not in nums:
-                return i
-        return -1
+# class Solution:
+#     def missing_number(self, nums: list[int]) -> int:
+#         length = len(nums)
+#         for i in range(length + 1):
+#             if i not in nums:
+#                 return i
+#         return -1
+#
+#
+# nums = [3, 0, 1]
+# sol = Solution()
+# print(sol.missing_number(nums))
+# class Sample:
+#     _instance = None
+#
+#     def __new__(cls, *args, **kwargs):
+#         if cls._instance is None:
+#             cls._instance = super().__new__(cls)
+#         return cls._instance
+#
+#
+#
+# a = Sample()
+# b = Sample()
+# print(a is b)
+# print(1000 % 60)
+# print((1000 //  60) % 60)
+# print((1000 // 3600) % 24)
+# class Check:
+#     def __set_name__(self, owner, name):
+#         self.public_name = name
+#         self.private_name = "_" + name
+#
+#     def __get__(self, instance, owner):
+#         value = getattr(instance, self.private_name)
+#         return value
+#
+#     def __set__(self, instance, value):
+#         if value > 4:
+#             setattr(instance, self.private_name, value)
+#         else:
+#             raise AttributeError('Значение меньше 4')
+#
+#
+# class A:
+#     a = Check()
+#     def __init__(self, a, b):
+#      self.a = a
+#      self.b = b
+#
+#
+#
+# a = A(7, 8)
+# a.a = 9
+# print(a.a)
+# print(a.__dict__)
+from collections import namedtuple
 
+nd = namedtuple('New', ('g', 'h'))
+n = nd(4, 8)
 
-nums = [3, 0, 1]
-sol = Solution()
-print(sol.missing_number(nums))
+print(n.h)
+print(n.g)

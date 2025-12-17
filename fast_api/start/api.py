@@ -1,6 +1,14 @@
+import os
+from typing import Annotated
+
+import aiofiles
+from starlette import status
+from starlette.responses import StreamingResponse
+from pathlib import Path
+
 from database.db import get_db
 from database.models import Person
-from fastapi import APIRouter, Body, Depends
+from fastapi import APIRouter, Body, Depends, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
 from sqlalchemy.orm import Session
 
@@ -75,3 +83,7 @@ def delete_person(id, db: Session = Depends(get_db)):
     db.delete(person)  # удаляем объект
     db.commit()  # сохраняем изменения
     return person
+
+
+
+
