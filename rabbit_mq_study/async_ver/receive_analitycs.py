@@ -1,5 +1,4 @@
 import asyncio
-from multiprocessing.pool import worker
 
 import aio_pika
 
