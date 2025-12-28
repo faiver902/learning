@@ -1,4 +1,6 @@
 import asyncio
+from multiprocessing.pool import worker
+
 import aio_pika
 
 from async_ver.conn import async_conn
@@ -32,13 +34,14 @@ async def main() -> None:
     )
 
     queue = await channel.declare_queue(
-        name="hello",
+        name="notification_analytics",
         durable=True,
     )
 
-    await queue.bind(exchange, routing_key="hello.send_hello")
+    await queue.bind(exchange, routing_key="notification.#")
 
-    await queue.consume(on_message)
+    for i in  range(5):
+        await queue.consume(on_message)
 
     print("Waiting for messages. Press CTRL+C to exit.")
     try:

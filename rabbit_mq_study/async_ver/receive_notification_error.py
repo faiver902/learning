@@ -10,7 +10,7 @@ settings = get_settings()
 async def on_message(message: aio_pika.IncomingMessage) -> None:
     # manual ack через контекст-менеджер
     async with message.process(requeue=True):
-        print(" [x] Received %r" % message.body)
+        print(" [x] Received %r" % message.body.decode('utf-8'))
         # если тут будет исключение — сообщение будет requeue (из-за requeue=True)
 
 
@@ -32,11 +32,11 @@ async def main() -> None:
     )
 
     queue = await channel.declare_queue(
-        name="hello",
+        name="notification_error",
         durable=True,
     )
 
-    await queue.bind(exchange, routing_key="hello.send_hello")
+    await queue.bind(exchange, routing_key="notification.error")
 
     await queue.consume(on_message)
 

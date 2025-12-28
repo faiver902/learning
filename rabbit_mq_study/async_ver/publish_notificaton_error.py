@@ -1,4 +1,6 @@
 import asyncio
+import json
+
 import aio_pika
 
 from async_ver.conn import async_conn
@@ -16,32 +18,22 @@ async def main() -> None:
     async with connection:
         channel = await connection.channel()
 
-        # 1) exchange
         exchange = await channel.declare_exchange(
             name="orders",
             type=aio_pika.ExchangeType.TOPIC,
             durable=True,
         )
+        message = {"message": "Send notification error"}
 
-        # 2) queue
-        queue = await channel.declare_queue(
-            name="hello",
-            durable=True,
-        )
-
-        # 3) bind queue -> exchange
-        await queue.bind(exchange, routing_key="hello")
-
-        # 4) publish
         await exchange.publish(
             aio_pika.Message(
-                body=b"Hello World!",
+                body=json.dumps(message).encode(),
                 delivery_mode=aio_pika.DeliveryMode.PERSISTENT,  # чтобы переживало рестарт (при durable queue)
             ),
-            routing_key="hello.send_hello",
+            routing_key="notification.error",
         )
 
-        print(" [x] Sent 'Hello World!'")
+        print(" [x] Sent 'Send notification error!'")
 
 
 if __name__ == "__main__":

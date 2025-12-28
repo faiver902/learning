@@ -2783,18 +2783,14 @@
 # a.a = 9
 # print(a.a)
 # print(a.__dict__)
+import asyncio
 
-from typing import List
 
+async def worker(index):
+    print(f'worker start {index}')
 
-class Solution:
-    def removeDuplicates(self, nums: List[int]) -> int:
-        acc = 0
-        for i in range(1, len(nums)):
-            if nums[i] != nums[acc]:
-                acc += 1
-                nums[acc] = nums[i]
-        return acc + 1
+async def main():
+    coroutines = [worker(i) for i in range(1, 11)]
+    await asyncio.gather(*coroutines)
 
-s = Solution()
-print(s.removeDuplicates([1,1,2]))
+asyncio.run(main())

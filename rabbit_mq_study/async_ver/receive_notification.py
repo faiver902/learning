@@ -32,11 +32,11 @@ async def main() -> None:
     )
 
     queue = await channel.declare_queue(
-        name="hello",
+        name="notification_send",
         durable=True,
     )
 
-    await queue.bind(exchange, routing_key="hello.send_hello")
+    await queue.bind(exchange, routing_key="notification.send")
 
     await queue.consume(on_message)
 
