@@ -2783,10 +2783,18 @@
 # a.a = 9
 # print(a.a)
 # print(a.__dict__)
-from collections import namedtuple
 
-nd = namedtuple('New', ('g', 'h'))
-n = nd(4, 8)
+from typing import List
 
-print(n.h)
-print(n.g)
+
+class Solution:
+    def removeDuplicates(self, nums: List[int]) -> int:
+        acc = 0
+        for i in range(1, len(nums)):
+            if nums[i] != nums[acc]:
+                acc += 1
+                nums[acc] = nums[i]
+        return acc + 1
+
+s = Solution()
+print(s.removeDuplicates([1,1,2]))

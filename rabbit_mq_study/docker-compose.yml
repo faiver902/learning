@@ -1,0 +1,21 @@
+services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    hostname: rabbitmq
+    ports:
+      - "5707:5672"    # AMQP
+      - "15673:15672"  # Web UI
+    environment:
+      RABBITMQ_DEFAULT_USER: app
+      RABBITMQ_DEFAULT_PASS: app
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  rabbitmq_data:

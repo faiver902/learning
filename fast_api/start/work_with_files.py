@@ -1,4 +1,5 @@
 import os
+from typing import Annotated
 
 import aiofiles
 from starlette import status
@@ -62,3 +63,31 @@ async  def stream_large_file(name: str):
         headers=headers,
         media_type="video/mp4"
     )
+
+
+@file_router.post("/files/")
+async def create_files(files: Annotated[list[UploadFile], File()]):
+    saved = []
+
+    for file in files:
+        try:
+            safe_filename = os.path.basename(file.filename)
+            file_path = os.path.join(UPLOAD_DIR, safe_filename)
+
+            async with aiofiles.open(file_path, 'wb') as out_file:
+                while chunk := await file.read(1024 * 1024):
+                    await out_file.write(chunk)
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                                detail=f"There was an error uploading the file: {e}")
+        finally:
+            await file.close()
+
+        saved.append({"name": safe_filename, "path": str(file_path)})
+
+    return {"saved": saved}
+
+
+@file_router.post("/uploadfiles/")
+async def create_upload_files(files: list[UploadFile]):
+    return {"filenames": [file.filename for file in files]}
